@@ -16,6 +16,7 @@ Agentes de IA só são úteis no mundo real quando conseguem chamar ferramentas.
 
 - Java 17 e Spring Boot 4.1.2
 - Spring AI 2.0.0 (servidor MCP)
+- React, TypeScript e Vite
 - Spring Web, Spring Data JPA e Bean Validation
 - H2 em memória (desenvolvimento)
 - JUnit 5 e Mockito
@@ -59,9 +60,16 @@ Pré-requisito: JDK compatível com a versão definida no `pom.xml`.
 ./mvnw test              # executa os testes
 ```
 
+## Frontend
+
+Para rodar a aplicação:
+- Backend: execute `./mvnw spring-boot:run` na raiz do projeto (sobe em http://localhost:8080).
+- Frontend: execute `cd frontend && npm install && npm run dev` (acessar http://localhost:5173).
+
 ## Roadmap
 
 - [x] API REST de despesas com validação e testes unitários
+- [x] Frontend básico
 - [ ] Servidor MCP com ferramentas: registrar despesa, listar despesas e resumo por categoria
 - [ ] Teste do servidor MCP com um agente de IA
 - [ ] Auditoria de chamadas de ferramentas via Kafka
