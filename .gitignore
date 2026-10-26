@@ -34,3 +34,7 @@ build/
 
 logs/
 .idea/
+
+frontend/node_modules
+frontend/dist
+
