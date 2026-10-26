@@ -1,122 +1,138 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useCallback, useEffect, useState } from 'react';
+import { getSummary, listExpenses } from './api';
+import { CategorySummary } from './components/CategorySummary';
+import { ExpenseForm } from './components/ExpenseForm';
+import { ExpenseList } from './components/ExpenseList';
+import type { CategorySummary as CategorySummaryType, ExpenseResponse } from './types';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+export function App() {
+  const [expenses, setExpenses] = useState<ExpenseResponse[]>([]);
+  const [expensesLoading, setExpensesLoading] = useState(false);
+  const [expensesError, setExpensesError] = useState<string | null>(null);
+
+  const [summary, setSummary] = useState<CategorySummaryType[]>([]);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+
+  const [categoryFilter, setCategoryFilter] = useState('');
+
+  const fetchExpenses = useCallback(async (category?: string) => {
+    setExpensesLoading(true);
+    setExpensesError(null);
+    try {
+      const data = await listExpenses(category);
+      setExpenses(data);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Falha ao carregar despesas.';
+      setExpensesError(message);
+    } finally {
+      setExpensesLoading(false);
+    }
+  }, []);
+
+  const fetchSummary = useCallback(async () => {
+    setSummaryLoading(true);
+    setSummaryError(null);
+    try {
+      const data = await getSummary();
+      setSummary(data);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Falha ao carregar resumo de categorias.';
+      setSummaryError(message);
+    } finally {
+      setSummaryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadData() {
+      setExpensesLoading(true);
+      setExpensesError(null);
+      try {
+        const data = await listExpenses(categoryFilter);
+        if (active) setExpenses(data);
+      } catch (err: unknown) {
+        if (active) {
+          setExpensesError(err instanceof Error ? err.message : 'Falha ao carregar despesas.');
+        }
+      } finally {
+        if (active) setExpensesLoading(false);
+      }
+    }
+
+    void loadData();
+
+    return () => {
+      active = false;
+    };
+  }, [categoryFilter]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadSummary() {
+      setSummaryLoading(true);
+      setSummaryError(null);
+      try {
+        const data = await getSummary();
+        if (active) setSummary(data);
+      } catch (err: unknown) {
+        if (active) {
+          setSummaryError(err instanceof Error ? err.message : 'Falha ao carregar resumo de categorias.');
+        }
+      } finally {
+        if (active) setSummaryLoading(false);
+      }
+    }
+
+    void loadSummary();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleExpenseCreated = () => {
+    void fetchExpenses(categoryFilter);
+    void fetchSummary();
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app-container">
+      <header className="app-header">
+        <div className="header-content">
+          <h1>Expense Tracker</h1>
+          <p className="subtitle">Controle de Despesas &amp; Servidor MCP</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <main className="app-main">
+        <div className="sidebar-column">
+          <ExpenseForm onExpenseCreated={handleExpenseCreated} />
+          <CategorySummary
+            summary={summary}
+            loading={summaryLoading}
+            error={summaryError}
+            onRetry={fetchSummary}
+          />
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <div className="content-column">
+          <ExpenseList
+            expenses={expenses}
+            loading={expensesLoading}
+            error={expensesError}
+            categoryFilter={categoryFilter}
+            onFilterChange={setCategoryFilter}
+            onRetry={() => void fetchExpenses(categoryFilter)}
+          />
+        </div>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
