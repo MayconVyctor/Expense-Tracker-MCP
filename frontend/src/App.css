@@ -55,6 +55,7 @@
   border-radius: var(--radius);
   padding: 20px;
   box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
 }
 
 .card h2 {
@@ -69,11 +70,12 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 14px;
+  min-width: 0;
 }
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -85,6 +87,9 @@
 }
 
 .form-group input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -202,6 +207,8 @@
   font-size: 0.9rem;
   background: var(--bg-card);
   color: var(--text-primary);
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .filter-group input:focus {
