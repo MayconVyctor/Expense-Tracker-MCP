@@ -51,6 +51,17 @@ curl -X POST http://localhost:8080/expenses \
 curl http://localhost:8080/expenses/summary
 ```
 
+## Servidor MCP
+
+- **Endpoint:** `http://localhost:8080/mcp`
+- **Transporte:** Streamable-HTTP (`STREAMABLE`)
+
+### Ferramentas registradas:
+
+1. `registerExpense`: Registra uma nova despesa (parâmetros: `description`, `amount`, `category`, `date` opcional em `yyyy-MM-dd`).
+2. `listExpenses`: Retorna até 50 despesas mais recentes (parâmetro: `category` opcional).
+3. `summarizeByCategory`: Retorna o total consolidado gasto por categoria (sem parâmetros).
+
 ## Como executar
 
 Pré-requisito: JDK compatível com a versão definida no `pom.xml`.
@@ -70,7 +81,7 @@ Para rodar a aplicação:
 
 - [x] API REST de despesas com validação e testes unitários
 - [x] Frontend básico
-- [ ] Servidor MCP com ferramentas: registrar despesa, listar despesas e resumo por categoria
+- [x] Servidor MCP com ferramentas: registrar despesa, listar despesas e resumo por categoria
 - [ ] Teste do servidor MCP com um agente de IA
 - [ ] Auditoria de chamadas de ferramentas via Kafka
 - [ ] Controle de acesso (Spring Security e JWT) e lista de ferramentas permitidas
