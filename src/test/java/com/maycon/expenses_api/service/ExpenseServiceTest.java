@@ -112,14 +112,60 @@ class ExpenseServiceTest {
             new Expense(1L, "Uber", new BigDecimal("25.00"), "Transporte", LocalDate.of(2026, 10, 23))
         );
 
-        when(expenseRepository.findByCategoryIgnoreCase("transporte")).thenReturn(mockExpenses);
+        when(expenseRepository.findByCategoryIgnoreCase("Transporte")).thenReturn(mockExpenses);
 
         List<ExpenseResponseDTO> result = expenseService.findAll("  transporte  ");
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).description()).isEqualTo("Uber");
         assertThat(result.get(0).category()).isEqualTo("Transporte");
-        verify(expenseRepository).findByCategoryIgnoreCase("transporte");
+        verify(expenseRepository).findByCategoryIgnoreCase("Transporte");
+        verifyNoMoreInteractions(expenseRepository);
+    }
+
+    @Test
+    @DisplayName("Should normalize category with trim and capitalize on create")
+    void shouldNormalizeCategoryOnCreate() {
+        ExpenseRequestDTO request = new ExpenseRequestDTO(
+            "Combustível",
+            new BigDecimal("150.00"),
+            "   tRaNsPoRtE   ",
+            LocalDate.of(2026, 11, 5)
+        );
+
+        Expense savedEntity = new Expense(
+            10L,
+            "Combustível",
+            new BigDecimal("150.00"),
+            "Transporte",
+            LocalDate.of(2026, 11, 5)
+        );
+
+        when(expenseRepository.save(any(Expense.class))).thenReturn(savedEntity);
+
+        ExpenseResponseDTO response = expenseService.create(request);
+
+        assertThat(response.category()).isEqualTo("Transporte");
+
+        ArgumentCaptor<Expense> captor = ArgumentCaptor.forClass(Expense.class);
+        verify(expenseRepository).save(captor.capture());
+        assertThat(captor.getValue().getCategory()).isEqualTo("Transporte");
+    }
+
+    @Test
+    @DisplayName("Should normalize category with trim and capitalize when filtering in findAll")
+    void shouldNormalizeCategoryOnFindAll() {
+        List<Expense> mockExpenses = List.of(
+            new Expense(1L, "Almoço", new BigDecimal("40.00"), "Alimentação", LocalDate.of(2026, 11, 5))
+        );
+
+        when(expenseRepository.findByCategoryIgnoreCase("Alimentação")).thenReturn(mockExpenses);
+
+        List<ExpenseResponseDTO> result = expenseService.findAll("  ALIMENTAÇÃO  ");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).category()).isEqualTo("Alimentação");
+        verify(expenseRepository).findByCategoryIgnoreCase("Alimentação");
         verifyNoMoreInteractions(expenseRepository);
     }
 

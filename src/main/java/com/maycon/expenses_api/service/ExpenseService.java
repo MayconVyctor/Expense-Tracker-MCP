@@ -23,7 +23,7 @@ public class ExpenseService {
         Expense expense = new Expense(
             dto.description().trim(),
             dto.amount(),
-            dto.category().trim(),
+            normalizeCategory(dto.category()),
             dto.date()
         );
         Expense savedExpense = expenseRepository.save(expense);
@@ -34,13 +34,26 @@ public class ExpenseService {
     public List<ExpenseResponseDTO> findAll(String category) {
         List<Expense> expenses;
         if (category != null && !category.trim().isEmpty()) {
-            expenses = expenseRepository.findByCategoryIgnoreCase(category.trim());
+            String normalizedCategory = normalizeCategory(category);
+            expenses = expenseRepository.findByCategoryIgnoreCase(normalizedCategory);
         } else {
             expenses = expenseRepository.findAll();
         }
         return expenses.stream()
             .map(ExpenseResponseDTO::fromEntity)
             .toList();
+    }
+
+    private String normalizeCategory(String category) {
+        if (category == null) {
+            return null;
+        }
+        String trimmed = category.trim();
+        if (trimmed.isEmpty()) {
+            return trimmed;
+        }
+        String lower = trimmed.toLowerCase();
+        return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }
 
     @Transactional(readOnly = true)
