@@ -67,18 +67,28 @@ curl http://localhost:8080/expenses/summary
 
 ## Como executar
 
-Pré-requisito: JDK compatível com a versão definida no `pom.xml`.
+### 1. Backend & Servidor MCP
+Pré-requisito: Java 17+ (compatível com a versão definida no `pom.xml`).
 
 ```bash
-./mvnw spring-boot:run   # sobe a API em http://localhost:8080
-./mvnw test              # executa os testes
+./mvnw spring-boot:run   # Sobe a API e o servidor MCP em http://localhost:8080
+./mvnw test              # Executa os testes unitários
 ```
 
-## Frontend
+- **Console do H2:** Acesse `http://localhost:8080/h2-console`
+  - JDBC URL: `jdbc:h2:mem:expensesdb`
+  - Usuário: `sa`
+  - Senha: *(em branco)*
 
-Para rodar a aplicação:
-- Backend: execute `./mvnw spring-boot:run` na raiz do projeto (sobe em http://localhost:8080).
-- Frontend: execute `cd frontend && npm install && npm run dev` (acessar http://localhost:5173).
+### 2. Frontend
+Pré-requisito: Node.js e npm.
+
+```bash
+cd frontend
+npm install
+npm run dev              # Sobe a interface web em http://localhost:5173
+```
+> O Vite inclui proxy reverso encaminhando as requisições `/expenses` para `http://localhost:8080`.
 
 ## Roadmap
 
