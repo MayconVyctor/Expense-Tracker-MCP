@@ -2,7 +2,7 @@
 
 API REST de controle de despesas em Java e Spring Boot, desenvolvida para ser exposta a agentes de IA por meio de um servidor **MCP (Model Context Protocol)**.
 
-> **Status: em desenvolvimento.** A API REST está pronta e testada. O servidor MCP e a trilha de auditoria estão no roadmap abaixo.
+> **Status: em desenvolvimento.** A API REST, o servidor MCP com ferramentas e o frontend em React estão prontos e testados. Trilha de auditoria (Kafka), controle de acesso (Spring Security) e persistência definitiva estão no roadmap abaixo.
 
 ## Por que este projeto existe
 
