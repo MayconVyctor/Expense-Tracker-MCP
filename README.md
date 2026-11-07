@@ -34,6 +34,7 @@ AI Agent (MCP Client) ----> ExpenseTools (MCP) --/
 - Valores monetários usam `BigDecimal`, nunca `double`, para evitar erros de arredondamento.
 - Tratamento global de exceções com `@RestControllerAdvice`.
 - O servidor MCP (`ExpenseTools`) reutiliza a mesma camada de serviço (`ExpenseService`), garantindo validações e regras de negócio consistentes tanto para o frontend quanto para agentes de IA.
+- Normalização automática de categorias: na criação e na filtragem, categorias recebem tratamento (remoção de espaços nas pontas e primeira letra maiúscula, ex.: `"  TRANSPORTE "` vira `"Transporte"`), prevenindo fragmentação no resumo.
 
 ## Endpoints
 
