@@ -25,13 +25,15 @@ Agentes de IA só são úteis no mundo real quando conseguem chamar ferramentas.
 ## Arquitetura
 
 ```
-controller  ->  service  ->  repository  ->  banco de dados
-   (REST)     (regras)       (JPA)
+Frontend (React + TS) ----> Controller (REST) ---\
+                                                 +--> Service (regras) --> Repository (JPA) --> Banco de dados (H2)
+AI Agent (MCP Client) ----> ExpenseTools (MCP) --/
 ```
 
 - DTOs (`record`) separam o contrato da API da entidade.
 - Valores monetários usam `BigDecimal`, nunca `double`, para evitar erros de arredondamento.
 - Tratamento global de exceções com `@RestControllerAdvice`.
+- O servidor MCP (`ExpenseTools`) reutiliza a mesma camada de serviço (`ExpenseService`), garantindo validações e regras de negócio consistentes tanto para o frontend quanto para agentes de IA.
 
 ## Endpoints
 
